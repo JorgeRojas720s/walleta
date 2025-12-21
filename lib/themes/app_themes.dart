@@ -8,7 +8,7 @@ class AppThemes {
     scaffoldBackgroundColor: AppColors.primaryLight,
     primaryColor: AppColors.primary,
     cardColor: AppColors.grayBackground,
-
+    shadowColor: Colors.black.withOpacity(0.04),
     textTheme: const TextTheme(
       labelSmall: TextStyle(color: AppColors.textSecondaryLight),
       bodyLarge: TextStyle(color: AppColors.textBlack),
@@ -23,6 +23,7 @@ class AppThemes {
     scaffoldBackgroundColor: AppColors.primaryDark,
     primaryColor: AppColors.primary,
     cardColor: AppColors.cardBackground,
+    shadowColor: Colors.white.withOpacity(0.04),
     textTheme: const TextTheme(
       labelSmall: TextStyle(color: AppColors.textSecondaryDark),
       bodyLarge: TextStyle(color: AppColors.textPrimary),

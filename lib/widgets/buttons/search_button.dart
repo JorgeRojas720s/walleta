@@ -77,25 +77,58 @@ class _SearchButtonState extends State<SearchButton>
               child: Material(
                 elevation: 8,
                 borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  constraints: const BoxConstraints(maxHeight: 100),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Theme.of(context).dividerColor),
-                  ),
-                  child: BlocProvider(
-                    create:
-                        (_) =>
-                            SearchBloc(SearchRepository())
-                              ..add(SearchTextChanged(_searchController.text)),
-                    child: _SearchResults(
-                      searchController: _searchController,
-                      onUserTap: (user) {
-                        _toggleSearch();
-                        // Navegar al perfil del usuario
-                      },
-                    ),
+                child: BlocProvider(
+                  create:
+                      (_) =>
+                          SearchBloc(SearchRepository())
+                            ..add(SearchTextChanged(_searchController.text)),
+                  child: BlocBuilder<SearchBloc, SearchState>(
+                    builder: (context, state) {
+                      // Determinar altura según el estado
+                      double? height;
+
+                      if (state is SearchLoaded && state.users.isNotEmpty) {
+                        // Con resultados: altura dinámica según cantidad
+                        // Cada ListTile ocupa ~72px + padding vertical 16px
+                        final itemHeight = 72.0;
+                        final padding = 16.0;
+                        final calculatedHeight =
+                            (state.users.length * itemHeight) + padding;
+
+                        // Mínimo el tamaño de 1 item, máximo 400px
+                        height = calculatedHeight.clamp(
+                          itemHeight + padding,
+                          400.0,
+                        );
+                      } else if (state is SearchLoading) {
+                        height = 100;
+                      } else if (state is SearchLoaded && state.users.isEmpty) {
+                        height = 120;
+                      } else if (state is SearchError) {
+                        height = 150;
+                      } else {
+                        height = 100;
+                      }
+
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        height: height,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                          ),
+                        ),
+                        child: _SearchResults(
+                          searchController: _searchController,
+                          onUserTap: (user) {
+                            _toggleSearch();
+                            // Navegar al perfil del usuario
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -243,26 +276,31 @@ class _SearchResults extends StatelessWidget {
             );
           }
 
-          return ListView.separated(
-            shrinkWrap: true,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: state.users.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final user = state.users[index];
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: ListView.separated(
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              physics:
+                  const BouncingScrollPhysics(), // Mejor experiencia de scroll
+              itemCount: state.users.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final user = state.users[index];
 
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(user['profilePictureUrl']),
-                ),
-                title: Text(
-                  user['username'],
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                subtitle: Text('${user['name']} ${user['surname']}'),
-                onTap: () => onUserTap(user),
-              );
-            },
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(user['profilePictureUrl']),
+                  ),
+                  title: Text(
+                    user['username'],
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text('${user['name']} ${user['surname']}'),
+                  onTap: () => onUserTap(user),
+                );
+              },
+            ),
           );
         }
 

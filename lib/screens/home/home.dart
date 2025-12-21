@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:walleta/screens/dashboard/dashbard.dart';
 import 'package:walleta/screens/profile/profile.dart';
+import 'package:walleta/screens/sharedExpenses/shared_expenses.dart';
 import 'package:walleta/themes/app_colors.dart';
 import 'package:walleta/widgets/layaout/navbar/navBar.dart';
 
@@ -35,7 +36,7 @@ class _HomeState extends State<Home> {
       case 1:
         return const Center(child: Text("Quien me debe/debo"));
       case 2:
-        return const Center(child: Text("Gastos Compartidos"));
+        return const SharedExpensesScreen();
       case 3:
         return const Profile();
       default:
