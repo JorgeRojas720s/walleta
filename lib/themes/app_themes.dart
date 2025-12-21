@@ -16,6 +16,7 @@ class AppThemes {
     iconTheme: const IconThemeData(color: AppColors.textBlack),
   );
 
+  //!Por defecto la app esta usando este
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     indicatorColor: AppColors.textPrimary,

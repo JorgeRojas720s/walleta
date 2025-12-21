@@ -7,7 +7,7 @@ class AppColors {
 
   static const Color primaryLight = Color(0xFFF2F2F7); // Light gray
   static const Color scaffoldBackground = Color(0xFF000000);
-  static const Color iconsNavBarColor = Color(0xFFFA243C);
+  static Color iconsNavBarColor = Color(0xFFFA243C);
   static const Color grayBackground = Color(0xFFD9D9D9);
 
   static const Color secondaryBackground = Color(0xFF1C1C1E);

@@ -13,9 +13,15 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inicio'),
-        actions: const [
-          Padding(padding: EdgeInsets.only(right: 12), child: SearchButton()),
+        title: const Text('Walleta'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: SearchButton(
+              iconColor: Theme.of(context).iconTheme.color,
+              size: 26,
+            ),
+          ),
         ],
       ),
       body: const Center(child: Text('Dashboard')),

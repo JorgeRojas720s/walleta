@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:walleta/blocs/authentication/bloc/authentication_bloc.dart';
 import 'package:walleta/models/user.dart';
 import 'package:walleta/themes/app_colors.dart';
+import 'package:walleta/widgets/layaout/appbar/drawer/custom_drawer.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -53,29 +54,29 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  // void _openDrawer() {
-  //   Navigator.of(context).push(
-  //     PageRouteBuilder(
-  //       pageBuilder:
-  //           (context, animation, secondaryAnimation) => CustomDrawer(
-  //             onClose: () => Navigator.of(context).pop(),
-  //             onItemSelected: _handleDrawerItemSelection,
-  //           ),
-  //       transitionDuration: const Duration(milliseconds: 300),
-  //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-  //         return SlideTransition(
-  //           position: Tween<Offset>(
-  //             begin: const Offset(1.0, 0.0),
-  //             end: Offset.zero,
-  //           ).animate(
-  //             CurvedAnimation(parent: animation, curve: Curves.easeOut),
-  //           ),
-  //           child: child,
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
+  void _openDrawer() {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder:
+            (context, animation, secondaryAnimation) => CustomDrawer(
+              onClose: () => Navigator.of(context).pop(),
+              onItemSelected: _handleDrawerItemSelection,
+            ),
+        transitionDuration: const Duration(milliseconds: 300),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1.0, 0.0),
+              end: Offset.zero,
+            ).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOut),
+            ),
+            child: child,
+          );
+        },
+      ),
+    );
+  }
 
   void _handleDrawerItemSelection(String item) {
     Navigator.of(context).pop();
@@ -84,29 +85,17 @@ class _ProfileState extends State<Profile> {
       case 'saved':
         _showPlaceholderDialog('Saved');
         break;
-      case 'archive':
-        _showPlaceholderDialog('Archive');
-        break;
       case 'activity':
         _showPlaceholderDialog('Your Activity');
         break;
       case 'notifications':
         _showPlaceholderDialog('Notifications');
         break;
-      case 'time':
-        _showPlaceholderDialog('Time Management');
-        break;
       case 'insights':
         _showPlaceholderDialog('Insights');
         break;
       case 'verified':
-        _showPlaceholderDialog('Meta Verified');
-        break;
-      case 'scheduled':
-        _showPlaceholderDialog('Scheduled Content');
-        break;
-      case 'creator':
-        _showPlaceholderDialog('Creator Tools');
+        _showPlaceholderDialog('Verified');
         break;
       case 'logout':
         context.read<AuthenticationBloc>().add(AuthenticationLogoutRequested());
@@ -171,6 +160,7 @@ class _ProfileState extends State<Profile> {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
+
       body: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
           if (state.status == AuthenticationStatus.unauthenticated) {
@@ -195,10 +185,10 @@ class _ProfileState extends State<Profile> {
                 foregroundColor: AppColors.textPrimary,
                 elevation: 0,
                 actions: [
-                  // IconButton(
-                  //   icon: Icon(Icons.menu, color: AppColors.textPrimary),
-                  //   onPressed: _openDrawer,
-                  // ),
+                  IconButton(
+                    icon: Icon(Icons.menu, color: AppColors.textPrimary),
+                    onPressed: _openDrawer,
+                  ),
                 ],
                 flexibleSpace: LayoutBuilder(
                   builder: (context, constraints) {
