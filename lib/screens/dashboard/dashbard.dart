@@ -18,6 +18,9 @@ class _DashboardState extends State<Dashboard> {
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: SearchButton(
+              onUserSelected: (user) {
+                print("❤️❤️❤️❤️❤️Usuario seleccionado: ${user['username']}");
+              },
               iconColor: Theme.of(context).iconTheme.color,
               size: 26,
             ),

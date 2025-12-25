@@ -17,7 +17,7 @@ class AppThemes {
       bodyLarge: TextStyle(color: Color(0xFF000000)),
     ),
 
-    iconTheme: const IconThemeData(color: AppColors.textBlack),
+    iconTheme: const IconThemeData(color: Colors.black),
     iconButtonTheme: IconButtonThemeData(
       style: IconButton.styleFrom(
         foregroundColor: Color(0xFFFA243C), // Apple Music red

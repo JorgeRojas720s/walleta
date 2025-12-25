@@ -7,10 +7,16 @@ import 'package:walleta/repository/search/search_repository.dart';
 import 'package:walleta/themes/app_colors.dart';
 
 class SearchButton extends StatefulWidget {
+  final void Function(Map<String, dynamic> user)? onUserSelected;
   final Color? iconColor;
   final double size;
 
-  const SearchButton({super.key, this.iconColor, this.size = 26});
+  const SearchButton({
+    super.key,
+    this.iconColor,
+    this.size = 26,
+    this.onUserSelected,
+  });
 
   @override
   State<SearchButton> createState() => _SearchButtonState();
@@ -87,27 +93,33 @@ class _SearchButtonState extends State<SearchButton>
                       // Determinar altura según el estado
                       double? height;
 
-                      if (state is SearchLoaded && state.users.isNotEmpty) {
-                        // Con resultados: altura dinámica según cantidad
-                        // Cada ListTile ocupa ~72px + padding vertical 16px
-                        final itemHeight = 72.0;
-                        final padding = 16.0;
-                        final calculatedHeight =
-                            (state.users.length * itemHeight) + padding;
+                      switch (state.status) {
+                        case SearchStatus.success:
+                          if (state.users.isNotEmpty) {
+                            final itemHeight = 72.0;
+                            final padding = 16.0;
+                            final calculatedHeight =
+                                (state.users.length * itemHeight) + padding;
 
-                        // Mínimo el tamaño de 1 item, máximo 400px
-                        height = calculatedHeight.clamp(
-                          itemHeight + padding,
-                          400.0,
-                        );
-                      } else if (state is SearchLoading) {
-                        height = 100;
-                      } else if (state is SearchLoaded && state.users.isEmpty) {
-                        height = 120;
-                      } else if (state is SearchError) {
-                        height = 150;
-                      } else {
-                        height = 100;
+                            height = calculatedHeight.clamp(
+                              itemHeight + padding,
+                              400.0,
+                            );
+                          } else {
+                            height = 120;
+                          }
+                          break;
+
+                        case SearchStatus.loading:
+                          height = 100;
+                          break;
+
+                        case SearchStatus.error:
+                          height = 150;
+                          break;
+
+                        default:
+                          height = 100;
                       }
 
                       return AnimatedContainer(
@@ -124,7 +136,7 @@ class _SearchButtonState extends State<SearchButton>
                           searchController: _searchController,
                           onUserTap: (user) {
                             _toggleSearch();
-                            // Navegar al perfil del usuario
+                            widget.onUserSelected?.call(user);
                           },
                         ),
                       );
@@ -242,7 +254,7 @@ class _SearchResults extends StatelessWidget {
 
     return BlocBuilder<SearchBloc, SearchState>(
       builder: (context, state) {
-        if (state is SearchInitial) {
+        if (SearchStatus.initial == state.status) {
           return const Padding(
             padding: EdgeInsets.all(16),
             child: Center(
@@ -254,7 +266,7 @@ class _SearchResults extends StatelessWidget {
           );
         }
 
-        if (state is SearchLoading) {
+        if (SearchStatus.loading == state.status) {
           return const Padding(
             padding: EdgeInsets.all(16),
             child: Center(
@@ -263,7 +275,7 @@ class _SearchResults extends StatelessWidget {
           );
         }
 
-        if (state is SearchLoaded) {
+        if (SearchStatus.success == state.status) {
           if (state.users.isEmpty) {
             return const Padding(
               padding: EdgeInsets.all(16),
@@ -304,12 +316,12 @@ class _SearchResults extends StatelessWidget {
           );
         }
 
-        if (state is SearchError) {
+        if (SearchStatus.error == state.status) {
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Center(
               child: Text(
-                state.message,
+                state.message ?? 'Error al buscar usuarios',
                 style: const TextStyle(color: Colors.red),
                 textAlign: TextAlign.center,
               ),

@@ -11,8 +11,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final SearchRepository repository;
   StreamSubscription? _subscription;
 
-  SearchBloc(this.repository) : super(SearchInitial()) {
-    /// 🔹 Evento cuando el texto cambia (con debounce)
+  SearchBloc(this.repository) : super(const SearchState.initial()) {
+    /// 🔹 Evento cuando cambia el texto (con debounce)
     on<SearchTextChanged>(
       _onSearchTextChanged,
       transformer:
@@ -21,15 +21,15 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
               .switchMap(mapper),
     );
 
-    /// 🔹 Evento INTERNO para emitir resultados
+    /// 🔹 Evento interno para emitir resultados
     on<_EmitResults>((event, emit) {
-      emit(SearchLoaded(event.users));
+      emit(SearchState.success(event.users));
     });
 
     /// 🔹 Limpiar búsqueda
     on<ClearSearch>((event, emit) {
       _subscription?.cancel();
-      emit(SearchInitial());
+      emit(const SearchState.initial());
     });
   }
 
@@ -37,7 +37,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     SearchTextChanged event,
     Emitter<SearchState> emit,
   ) async {
-    emit(SearchLoading());
+    emit(const SearchState.loading());
 
     await _subscription?.cancel();
 
@@ -45,12 +45,10 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         .searchUsers(event.query.toLowerCase())
         .listen(
           (users) {
-            /// 👇 Aquí NO se hace emit directo
-            /// Se manda un evento interno
             add(_EmitResults(users));
           },
           onError: (_) {
-            emit(const SearchError('Error al buscar usuarios'));
+            emit(const SearchState.error('Error al buscar usuarios'));
           },
         );
   }
@@ -62,7 +60,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 }
 
-/// ⚠️ EVENTO INTERNO (va en ESTE archivo)
+/// ⚠️ Evento interno (solo para este bloc)
 class _EmitResults extends SearchEvent {
   final List<Map<String, dynamic>> users;
 
