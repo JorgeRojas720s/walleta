@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:walleta/blocs/authentication/bloc/authentication_bloc.dart';
+import 'package:walleta/blocs/sharedExpense/sharedExpense.dart';
 import 'package:walleta/models/shared_expense.dart';
+import 'package:walleta/models/user.dart';
 import 'package:walleta/themes/app_colors.dart';
 import 'package:walleta/widgets/buttons/search_button.dart';
 
@@ -450,7 +454,13 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
         categoryColor: category['color'],
       );
 
-      widget.onSave(expense);
+      final User user = context.read<AuthenticationBloc>().state.user;
+      print("📍📍📍📍User ID: ${user.uid} aaaaa ${expense}");
+      context.read<SharedExpenseBloc>().add(
+        AddSharedExpense(userId: user.uid, expense: expense),
+      );
+
+      // widget.onSave(expense);
       Navigator.pop(context);
     } else {
       String message = 'Por favor completa todos los campos';

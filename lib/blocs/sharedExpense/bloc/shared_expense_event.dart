@@ -2,12 +2,17 @@ import 'package:walleta/models/shared_expense.dart';
 
 abstract class SharedExpenseEvent {}
 
-class LoadSharedExpenses extends SharedExpenseEvent {}
+class LoadSharedExpenses extends SharedExpenseEvent {
+  final String userId;
+
+  LoadSharedExpenses({required this.userId});
+}
 
 class AddSharedExpense extends SharedExpenseEvent {
+  final String userId;
   final SharedExpense expense;
 
-  AddSharedExpense(this.expense);
+  AddSharedExpense({required this.userId, required this.expense});
 }
 
 class UpdateSharedExpense extends SharedExpenseEvent {

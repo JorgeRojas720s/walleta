@@ -6,6 +6,8 @@ import 'package:walleta/repository/repository.dart';
 import 'package:walleta/routes/routes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'blocs/authentication/bloc/authentication_bloc.dart';
+import 'blocs/sharedExpense/bloc/shared_expense_bloc.dart';
+import 'repository/sharedExpense/shared_expense_repository.dart';
 
 class App extends StatelessWidget {
   final AuthenticationRepository authenticationRepository;
@@ -25,6 +27,12 @@ class App extends StatelessWidget {
             create:
                 (_) => AuthenticationBloc(
                   authenticationRepository: authenticationRepository,
+                ),
+          ),
+          BlocProvider(
+            create:
+                (context) => SharedExpenseBloc(
+                  sharedExpenseRepository: SharedExpenseRepository(),
                 ),
           ),
           // ChangeNotifierProvider(create: (_) => UserProvider()),

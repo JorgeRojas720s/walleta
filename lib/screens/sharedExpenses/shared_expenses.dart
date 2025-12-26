@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:walleta/blocs/authentication/bloc/authentication_bloc.dart';
+import 'package:walleta/blocs/sharedExpense/bloc/shared_expense_bloc.dart';
+import 'package:walleta/blocs/sharedExpense/bloc/shared_expense_event.dart';
+import 'package:walleta/blocs/sharedExpense/bloc/shared_expense_state.dart';
 import 'package:walleta/screens/sharedExpenses/add_expense.dart';
 import 'package:walleta/widgets/cards/expense_card.dart';
 
@@ -30,6 +35,15 @@ class _SharedExpensesScreenState extends State<SharedExpensesScreen> {
   //     categoryColor: Colors.orange,
   //   ),
   // ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    final userId = context.read<AuthenticationBloc>().state.user.uid;
+
+    context.read<SharedExpenseBloc>().add(LoadSharedExpenses(userId: userId));
+  }
 
   void _showAddExpenseSheet() {
     showModalBottomSheet(
@@ -76,15 +90,29 @@ class _SharedExpensesScreenState extends State<SharedExpensesScreen> {
           ),
         ],
       ),
-      // body:
-      //     expenses.isEmpty
-      //         ? _buildEmptyState()
-      //         : ListView.builder(
-      //           padding: const EdgeInsets.all(16),
-      //           itemCount: expenses.length,
-      //           itemBuilder:
-      //               (context, index) => ExpenseCard(expense: expenses[index]),
-      //         ),
+      body: BlocBuilder<SharedExpenseBloc, SharedExpenseState>(
+        builder: (context, state) {
+          if (state.status == SharedExpenseStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state.status == SharedExpenseStatus.error) {
+            return const Center(child: Text('Error al cargar los gastos'));
+          }
+
+          if (state.expenses.isEmpty) {
+            return _buildEmptyState();
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: state.expenses.length,
+            itemBuilder: (context, index) {
+              return ExpenseCard(expense: state.expenses[index]);
+            },
+          );
+        },
+      ),
     );
   }
 
